@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @version 3.0
  * @author Brody Gaudel MOUNANGA BOUKA
  */
-@FeignClient(name = "CUSTOMER-SERVICE")
+@FeignClient(name = "customer-service")
 public interface CustomerRestClient {
 
     /**

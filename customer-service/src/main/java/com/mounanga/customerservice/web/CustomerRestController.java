@@ -24,7 +24,6 @@ public class CustomerRestController {
     }
 
     @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
     public CustomerResponseDTO createCustomer(@RequestBody CustomerRequestDTO dto) throws CinAlreadyExistException, EmailAlreadyExistException, CustomerNotAdultException {
         return customerService.createCustomer(dto);
     }
@@ -35,20 +34,17 @@ public class CustomerRestController {
     }
 
     @GetMapping("/get/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
     public CustomerResponseDTO getCustomerById(@PathVariable String id) {
         return customerService.getCustomerById(id);
     }
 
     @GetMapping("/list")
-    @ResponseStatus(HttpStatus.FOUND)
     public CustomerPageResponseDTO getAllCustomers(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
         return customerService.getAllCustomers(page, size);
     }
 
     @GetMapping("/search")
-    @ResponseStatus(HttpStatus.FOUND)
     public CustomerPageResponseDTO searchCustomers(@RequestParam(defaultValue = "") String keyword,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
@@ -56,7 +52,6 @@ public class CustomerRestController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCustomerById(@PathVariable String id) {
         customerService.deleteCustomerById(id);
     }
