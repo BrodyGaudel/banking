@@ -1,4 +1,4 @@
-package com.brodygaudel.accountservice.command.exception;
+package com.brodygaudel.accountservice.common.exception;
 
 public class AmountNotSufficientException extends RuntimeException{
     /**

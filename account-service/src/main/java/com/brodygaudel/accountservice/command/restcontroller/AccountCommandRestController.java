@@ -5,7 +5,10 @@ import com.brodygaudel.accountservice.command.dto.CreditDTO;
 import com.brodygaudel.accountservice.command.dto.DebitDTO;
 import com.brodygaudel.accountservice.command.dto.UpdateStatusDTO;
 import com.brodygaudel.accountservice.command.service.AccountCommandService;
+import com.brodygaudel.accountservice.common.exception.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +58,25 @@ public class AccountCommandRestController {
         return accountCommandService.delete(id)
                 .thenApply(ResponseEntity::ok)
                 .exceptionally(ex -> ResponseEntity.status(500).body("Error deleting account: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> exceptionHandler(@NotNull Exception exception) {
+        HttpStatus httpStatus;
+        if (exception instanceof AccountNotFoundException) {
+            httpStatus = HttpStatus.NOT_FOUND;
+        }  else if (exception instanceof AmountNotSufficientException) {
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        } else if (exception instanceof BalanceNotInsufficientException) {
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        } else if (exception instanceof AccountNotActivatedException) {
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        } else if (exception instanceof CustomerAlreadyHaveAccountException) {
+            httpStatus = HttpStatus.CONFLICT;
+        } else {
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<>(exception.getMessage(), httpStatus);
     }
 }
 

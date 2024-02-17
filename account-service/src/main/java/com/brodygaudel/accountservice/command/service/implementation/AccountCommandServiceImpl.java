@@ -1,7 +1,7 @@
 package com.brodygaudel.accountservice.command.service.implementation;
 
 import com.brodygaudel.accountservice.command.dto.*;
-import com.brodygaudel.accountservice.command.exception.CustomerNotFoundException;
+import com.brodygaudel.accountservice.common.exception.CustomerNotFoundException;
 import com.brodygaudel.accountservice.command.feign.CustomerRestClient;
 import com.brodygaudel.accountservice.command.model.*;
 import com.brodygaudel.accountservice.command.service.AccountCommandService;

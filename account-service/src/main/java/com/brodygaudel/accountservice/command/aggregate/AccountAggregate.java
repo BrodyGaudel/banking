@@ -1,7 +1,7 @@
 package com.brodygaudel.accountservice.command.aggregate;
 
-import com.brodygaudel.accountservice.command.exception.AmountNotSufficientException;
-import com.brodygaudel.accountservice.command.exception.BalanceNotInsufficientException;
+import com.brodygaudel.accountservice.common.exception.AmountNotSufficientException;
+import com.brodygaudel.accountservice.common.exception.BalanceNotInsufficientException;
 import com.brodygaudel.accountservice.command.model.*;
 import com.brodygaudel.accountservice.common.enums.AccountStatus;
 import com.brodygaudel.accountservice.common.enums.Currency;

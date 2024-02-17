@@ -1,6 +1,6 @@
-package com.brodygaudel.accountservice.command.exception;
+package com.brodygaudel.accountservice.common.exception;
 
-public class CustomerNotFoundException extends RuntimeException{
+public class BalanceNotInsufficientException extends RuntimeException {
     /**
      * Constructs a new runtime exception with the specified detail message.
      * The cause is not initialized, and may subsequently be initialized by a
@@ -9,7 +9,7 @@ public class CustomerNotFoundException extends RuntimeException{
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public CustomerNotFoundException(String message) {
+    public BalanceNotInsufficientException(String message) {
         super(message);
     }
 }
