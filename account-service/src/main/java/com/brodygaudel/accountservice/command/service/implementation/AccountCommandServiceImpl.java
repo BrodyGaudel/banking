@@ -50,7 +50,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Override
     public CompletableFuture<String> create(@NotNull CreateAccountDTO dto) {
         log.info("# In create()");
-        if(customerExist(dto.customerId())){
+        if(customerNotExist(dto.customerId())){
             throw new CustomerNotFoundException("customer not found");
         }
         return commandGateway.send(new CreateAccountCommand(idGenerator.autoGenerate(), AccountStatus.CREATED,
@@ -123,12 +123,12 @@ public class AccountCommandServiceImpl implements AccountCommandService {
      * @param customerId The ID of the customer to check for existence.
      * @return {@code true} if a customer with the specified ID exists, {@code false} otherwise.
      */
-    private boolean customerExist(String customerId) {
+    private boolean customerNotExist(String customerId) {
         try {
             // Attempt to retrieve the customer information by ID
             CustomerDTO dto = customerRestClient.getById(customerId);
             // Return true if the DTO is not null, indicating the customer exists
-            return dto != null;
+            return dto == null;
         } catch (Exception e) {
             log.warn(e.getMessage());
             // In case of any exception during retrieval, return false

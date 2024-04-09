@@ -75,8 +75,7 @@ public class AccountAggregate {
         this.currency = event.getCurrency();
         this.customerId = event.getCustomerId();
         this.creation = event.getCreation();
-        this.lastUpdate = null;
-        AggregateLifecycle.apply( new ActiveAccountCommand(this.accountId, AccountStatus.ACTIVATED, LocalDateTime.now()));
+        AggregateLifecycle.apply( new AccountActivatedEvent(this.accountId, AccountStatus.ACTIVATED, LocalDateTime.now()));
     }
 
     /**

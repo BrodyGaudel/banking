@@ -4,6 +4,7 @@ import com.brodygaudel.accountservice.common.enums.AccountStatus;
 import com.brodygaudel.accountservice.common.enums.Currency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -20,7 +21,8 @@ import java.util.List;
 public class Account {
 
     @Id
-    @Column(unique = true, nullable = false, updatable = false)
+    @Column(unique = true, nullable = false, updatable = false, length=16)
+    @NotBlank
     private String id;
 
     @Column(nullable = false)

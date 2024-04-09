@@ -60,8 +60,14 @@ public class AccountEventHandlerService {
         if (accountRepository.customerIdExists(event.getCustomerId())) {
             throw new CustomerAlreadyHaveAccountException("There is already a customer with this id");
         } else {
-            Account account = Account.builder().currency(event.getCurrency()).id(event.getId()).status(event.getStatus())
-                    .customerId(event.getCustomerId()).creation(event.getCreation()).build();
+            Account account = Account.builder()
+                    .currency(event.getCurrency())
+                    .id(event.getId())
+                    .status(event.getStatus())
+                    .customerId(event.getCustomerId())
+                    .creation(event.getCreation())
+                    .balance(event.getBalance())
+                    .build();
             Account accountSaved = accountRepository.save(account);
             log.info("Account successfully created at: " + accountSaved.getCreation());
         }
@@ -120,7 +126,7 @@ public class AccountEventHandlerService {
         Account account = getAccountById(event.getId());
         if (account.getStatus().equals(AccountStatus.ACTIVATED)) {
             account.setBalance(account.getBalance().add(event.getAmount()));
-            apply(account, event.getDateTime(), event.getAmount(), event.getDescription(), "credited");
+            apply(account, event.getDateTime(), event.getAmount(), event.getDescription(), "credited", OperationType.CREDIT);
         } else {
             throw new AccountNotActivatedException("Account not activated");
         }
@@ -137,7 +143,7 @@ public class AccountEventHandlerService {
         Account account = getAccountById(event.getId());
         if (account.getStatus().equals(AccountStatus.ACTIVATED)) {
             account.setBalance(account.getBalance().subtract(event.getAmount()));
-            apply(account, event.getDateTime(), event.getAmount(), event.getDescription(), "debited");
+            apply(account, event.getDateTime(), event.getAmount(), event.getDescription(), "debited", OperationType.DEBIT);
         } else {
             throw new AccountNotActivatedException("Account not activated");
         }
@@ -164,9 +170,9 @@ public class AccountEventHandlerService {
      * @param description A description of the credit/debit operation.
      * @param message     A message indicating the nature of the account update.
      */
-    private void apply(@NotNull Account account, LocalDateTime dateTime, BigDecimal amount, String description, String message) {
+    private void apply(@NotNull Account account, LocalDateTime dateTime, BigDecimal amount, String description, String message, OperationType type) {
         account.setLastUpdate(dateTime);
-        Operation operation = Operation.builder().account(account).amount(amount).type(OperationType.CREDIT)
+        Operation operation = Operation.builder().account(account).amount(amount).type(type)
                 .description(description).dateTime(dateTime).id(UUID.randomUUID().toString())
                 .build();
         Operation operationSaved = operationRepository.save(operation);

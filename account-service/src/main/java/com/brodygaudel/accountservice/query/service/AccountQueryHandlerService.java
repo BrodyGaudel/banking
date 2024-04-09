@@ -4,7 +4,6 @@ import com.brodygaudel.accountservice.common.exception.AccountNotFoundException;
 import com.brodygaudel.accountservice.common.exception.OperationNotFoundException;
 import com.brodygaudel.accountservice.query.dto.AccountDTO;
 import com.brodygaudel.accountservice.query.dto.OperationDTO;
-import com.brodygaudel.accountservice.query.dto.OperationPageDTO;
 import com.brodygaudel.accountservice.query.entity.Account;
 import com.brodygaudel.accountservice.query.entity.Operation;
 import com.brodygaudel.accountservice.query.model.GetAccountByCustomerIdQuery;
@@ -20,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Service class for handling account-related queries.
@@ -100,22 +101,16 @@ public class AccountQueryHandlerService {
      * Handles the GetOperationsByAccountIdQuery to retrieve operations by account ID.
      *
      * @param query The GetOperationsByAccountIdQuery object.
-     * @return The OperationPageDTO object containing operations information.
+     * @return List<OperationDTO> object containing operations information.
      */
     @QueryHandler
-    public OperationPageDTO handle(@NotNull GetOperationsByAccountIdQuery query){
+    public List<OperationDTO> handle(@NotNull GetOperationsByAccountIdQuery query){
         log.info("GetOperationsByAccountIdQuery handled");
         Page<Operation> operationPage = operationRepository.findByAccountId(
                 query.getAccountId(), PageRequest.of(query.getPage(), query.getSize())
         );
         log.info("operation(s) found");
-        return new OperationPageDTO(
-                operationPage.getTotalPages(),
-                query.getPage(),
-                query.getSize(),
-                operationPage.getTotalElements(),
-                operationPage.getContent().stream().map(this::fromOperation).toList()
-        );
+        return operationPage.getContent().stream().map(this::fromOperation).toList();
     }
 
     /**
@@ -144,6 +139,7 @@ public class AccountQueryHandlerService {
      */
     private OperationDTO fromOperation(@NotNull Operation operation){
         return OperationDTO.builder()
+                .id(operation.getId())
                 .accountId(operation.getAccount().getId())
                 .amount(operation.getAmount())
                 .description(operation.getDescription())

@@ -1,7 +1,5 @@
 package com.brodygaudel.accountservice.query.restcontroller;
 
-import com.brodygaudel.accountservice.common.exception.AccountNotFoundException;
-import com.brodygaudel.accountservice.common.exception.OperationNotFoundException;
 import com.brodygaudel.accountservice.query.dto.AccountDTO;
 import com.brodygaudel.accountservice.query.dto.OperationDTO;
 import com.brodygaudel.accountservice.query.dto.OperationPageDTO;
@@ -9,6 +7,7 @@ import com.brodygaudel.accountservice.query.model.GetAccountByCustomerIdQuery;
 import com.brodygaudel.accountservice.query.model.GetAccountByIdQuery;
 import com.brodygaudel.accountservice.query.model.GetOperationByIdQuery;
 
+import com.brodygaudel.accountservice.query.model.GetOperationsByAccountIdQuery;
 import org.axonframework.messaging.responsetypes.ResponseType;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -16,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/accounts/queries")
@@ -48,21 +49,19 @@ public class AccountQueryRestController {
         return queryGateway.query(query , responseType).join();
     }
 
-    @GetMapping("/find-operation/{accountId}")
-    public OperationPageDTO getOperationsByAccountId(@PathVariable String accountId){
-        GetOperationByIdQuery query = new GetOperationByIdQuery(accountId);
-        ResponseType<OperationPageDTO> responseType = ResponseTypes.instanceOf(OperationPageDTO.class);
-        return queryGateway.query(query , responseType).join();
+    @GetMapping("/find-operations")
+    public OperationPageDTO getOperationsByAccountId(@RequestParam(name = "accountId", defaultValue = "") String accountId,
+                                                       @RequestParam(name = "page", defaultValue = "0") int page,
+                                                       @RequestParam(name = "size", defaultValue = "10") int size){
+
+        GetOperationsByAccountIdQuery query = new GetOperationsByAccountIdQuery(accountId, page, size);
+        ResponseType<List<OperationDTO>> responseType = ResponseTypes.multipleInstancesOf(OperationDTO.class);
+        List<OperationDTO> operationDTOS = queryGateway.query(query, responseType).join();
+        return new OperationPageDTO(page, size, operationDTOS.size(), operationDTOS);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandler(@NotNull Exception exception) {
-        HttpStatus httpStatus;
-        if(exception instanceof AccountNotFoundException || exception instanceof OperationNotFoundException){
-            httpStatus = HttpStatus.NOT_FOUND;
-        } else{
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new ResponseEntity<>(exception.getMessage(), httpStatus);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

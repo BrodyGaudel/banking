@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 @ToString
 public class OperationPageDTO {
-    private int totalPage;
     private int page;
     private int size;
     private long totalElements;
